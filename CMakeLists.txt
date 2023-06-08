@@ -5,6 +5,7 @@ include(CTest)
 enable_testing()
 
 add_executable(cnn main.c ./images/image.c ./matrix/matrix.c ./matrix/operations.c ./network/activations.c ./network/nn.c)
+target_link_libraries(cnn m)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
