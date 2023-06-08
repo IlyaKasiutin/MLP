@@ -28,9 +28,9 @@ NeuralNetwork* network_create(int input, int hidden, int output, double lr) {
 void network_train(NeuralNetwork* net, Matrix* input, Matrix* output) {
 	// Feed forward
 	Matrix* hidden_inputs	= dot(net->hidden_weights, input);
-	Matrix* hidden_outputs = apply(relu, hidden_inputs);
+	Matrix* hidden_outputs = apply(sigmoid, hidden_inputs);
 	Matrix* final_inputs = dot(net->output_weights, hidden_outputs);
-	Matrix* final_outputs = apply(relu, final_inputs);
+	Matrix* final_outputs = apply(sigmoid, final_inputs);
 
 	// Find errors
 	Matrix* output_errors = subtract(output, final_outputs);
