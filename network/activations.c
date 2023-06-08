@@ -22,6 +22,18 @@ Matrix* sigmoidPrime(Matrix* m) {
 	return multiplied;
 }
 
+Matrix* reluPrime(Matrix* m) {
+	Matrix* res = matrix_create(m->rows, m->cols);
+	double prime = 0.0;
+	for (int i = 0; i < m->rows; i++) {
+		for (int j = 0; j < m->cols; j++) {
+			prime = (m->entries[i][j] > 0) ? 1 : 0.01;
+			res->entries[i][j] = prime;
+		}
+	}
+	return res;
+}
+
 Matrix* softmax(Matrix* m) {
 	double total = 0;
 	for (int i = 0; i < m->rows; i++) {

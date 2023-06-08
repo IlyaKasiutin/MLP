@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAXCHAR 100
+#define MAXCHAR 10000
 
 Matrix* matrix_create(int row, int col) {
 	Matrix *matrix = malloc(sizeof(Matrix));
@@ -37,8 +37,8 @@ void matrix_print(Matrix* m) {
 	printf("Rows: %d Columns: %d\n", m->rows, m->cols);
 	for (int i = 0; i < m->rows; i++) {
 		for (int j = 0; j < m->cols; j++) {
-			//printf("%1.3f ", m->entries[i][j]);
-			printf("%d", m->entries[i][j] > 0 ? 1 : 0);
+			printf("%1.3f ", m->entries[i][j]);
+			//printf("%d", m->entries[i][j] > 0 ? 1 : 0);
 		}
 		printf("\n");
 	}
@@ -104,7 +104,7 @@ void matrix_randomize(Matrix* m, int n) {
 }
 
 int matrix_argmax(Matrix* m) {
-	// Expects a Mx1 matrix
+	// Needs Mx1 matrix
 	double max_score = 0;
 	int max_idx = 0;
 	for (int i = 0; i < m->rows; i++) {

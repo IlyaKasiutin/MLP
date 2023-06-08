@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAXCHAR 1000
+#define MAXCHAR 10000
 
 Img** csv_to_imgs(char* file_string, int number_of_imgs) {
 	FILE *fp;
@@ -11,7 +11,6 @@ Img** csv_to_imgs(char* file_string, int number_of_imgs) {
 	char row[MAXCHAR];
 	fp = fopen(file_string, "r");
 
-	// Read the first line 
 	fgets(row, MAXCHAR, fp);
 	int i = 0;
 	while (feof(fp) != 1 && i < number_of_imgs) {

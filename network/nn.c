@@ -7,7 +7,7 @@
 #include "../matrix/operations.h"
 #include "activations.h"
 
-#define MAXCHAR 1000
+#define MAXCHAR 10000
 
 // 784, 300, 10
 NeuralNetwork* network_create(int input, int hidden, int output, double lr) {
@@ -29,10 +29,12 @@ void network_train(NeuralNetwork* net, Matrix* input, Matrix* output) {
 	// Feed forward
 	Matrix* hidden_inputs = dot(net->hidden_weights, input);
 	Matrix* hidden_outputs = apply(sigmoid, hidden_inputs);
+	//Matrix* hidden_outputs = apply(relu, hidden_inputs);
 	Matrix* final_inputs = dot(net->output_weights, hidden_outputs);
 	Matrix* final_outputs = apply(sigmoid, final_inputs);
+	//Matrix* final_outputs = apply(relu, final_inputs);
 
-	// Find errors
+	// Count errors
 	Matrix* output_errors = subtract(output, final_outputs);
 	Matrix* transposed_mat = transpose(net->output_weights);
 	Matrix* hidden_errors = dot(transposed_mat, output_errors);
@@ -52,14 +54,16 @@ void network_train(NeuralNetwork* net, Matrix* input, Matrix* output) {
 	// 				)
 	// 		 )
 	// )
+
 	Matrix* sigmoid_primed_mat = sigmoidPrime(final_outputs);
+	//Matrix* sigmoid_primed_mat = reluPrime(final_outputs);
 	Matrix* multiplied_mat = multiply(output_errors, sigmoid_primed_mat);
 	transposed_mat = transpose(hidden_outputs);
 	Matrix* dot_mat = dot(multiplied_mat, transposed_mat);
 	Matrix* scaled_mat = scale(net->learning_rate, dot_mat);
 	Matrix* added_mat = add(net->output_weights, scaled_mat);
 
-	matrix_free(net->output_weights); // Free the old weights before replacing
+	matrix_free(net->output_weights);
 	net->output_weights = added_mat;
 
 	matrix_free(sigmoid_primed_mat);
@@ -81,14 +85,16 @@ void network_train(NeuralNetwork* net, Matrix* input, Matrix* output) {
 	//      )
 	// 	 )
 	// )
-	// Reusing variables after freeing memory
+
+
 	sigmoid_primed_mat = sigmoidPrime(hidden_outputs);
+	//sigmoid_primed_mat = reluPrime(hidden_outputs);
 	multiplied_mat = multiply(hidden_errors, sigmoid_primed_mat);
 	transposed_mat = transpose(input);
 	dot_mat = dot(multiplied_mat, transposed_mat);
 	scaled_mat = scale(net->learning_rate, dot_mat);
 	added_mat = add(net->hidden_weights, scaled_mat);
-	matrix_free(net->hidden_weights); // Free the old hidden_weights before replacement
+	matrix_free(net->hidden_weights);
 	net->hidden_weights = added_mat; 
 
 	matrix_free(sigmoid_primed_mat);
@@ -97,7 +103,6 @@ void network_train(NeuralNetwork* net, Matrix* input, Matrix* output) {
 	matrix_free(dot_mat);
 	matrix_free(scaled_mat);
 
-	// Free matrices
 	matrix_free(hidden_inputs);
 	matrix_free(hidden_outputs);
 	matrix_free(final_inputs);
@@ -110,9 +115,9 @@ void network_train_batch_imgs(NeuralNetwork* net, Img** imgs, int batch_size) {
 	for (int i = 0; i < batch_size; i++) {
 		if (i % 100 == 0) printf("Img: %d\n", i);
 		Img* cur_img = imgs[i];
-		Matrix* img_data = matrix_flatten(cur_img->img_data, 0); // 0 = flatten to column vector
+		Matrix* img_data = matrix_flatten(cur_img->img_data, 0);
 		Matrix* output = matrix_create(10, 1);
-		output->entries[cur_img->label][0] = 1; // Setting the result
+		output->entries[cur_img->label][0] = 1;
 		network_train(net, img_data, output);
 		matrix_free(output);
 		matrix_free(img_data);
@@ -139,10 +144,12 @@ double network_predict_imgs(NeuralNetwork* net, Img** imgs, int n) {
 }
 
 Matrix* network_predict(NeuralNetwork* net, Matrix* input_data) {
-	Matrix* hidden_inputs	= dot(net->hidden_weights, input_data);
+	Matrix* hidden_inputs = dot(net->hidden_weights, input_data);
 	Matrix* hidden_outputs = apply(sigmoid, hidden_inputs);
+	//Matrix* hidden_outputs = apply(relu, hidden_inputs);
 	Matrix* final_inputs = dot(net->output_weights, hidden_outputs);
 	Matrix* final_outputs = apply(sigmoid, final_inputs);
+	//Matrix* final_outputs = apply(relu, final_inputs);
 	Matrix* result = softmax(final_outputs);
 
 	matrix_free(hidden_inputs);
@@ -156,17 +163,17 @@ Matrix* network_predict(NeuralNetwork* net, Matrix* input_data) {
 void network_save(NeuralNetwork* net, char* file_string) {
 	mkdir(file_string, 0777);
 	//chmod(file_string, 0777);
-	// Write the descriptor file
+
 	chdir(file_string);
-	FILE* descriptor = fopen("descriptor", "w");
-	fprintf(descriptor, "%d\n", net->input);
-	fprintf(descriptor, "%d\n", net->hidden);
-	fprintf(descriptor, "%d\n", net->output);
-	fclose(descriptor);
+	FILE* config = fopen("config", "w");
+	fprintf(config, "%d\n", net->input);
+	fprintf(config, "%d\n", net->hidden);
+	fprintf(config, "%d\n", net->output);
+	fclose(config);
 	matrix_save(net->hidden_weights, "hidden");
 	matrix_save(net->output_weights, "output");
 	printf("Successfully written to '%s'\n", file_string);
-	chdir("-"); // Go back to the orignal directory
+	chdir("-");
 }
 
 NeuralNetwork* network_load(char* file_string) {
@@ -174,18 +181,18 @@ NeuralNetwork* network_load(char* file_string) {
 	char entry[MAXCHAR];
 	chdir(file_string);
 
-	FILE* descriptor = fopen("descriptor", "r");
-	fgets(entry, MAXCHAR, descriptor);
+	FILE* config = fopen("config", "r");
+	fgets(entry, MAXCHAR, config);
 	net->input = atoi(entry);
-	fgets(entry, MAXCHAR, descriptor);
+	fgets(entry, MAXCHAR, config);
 	net->hidden = atoi(entry);
-	fgets(entry, MAXCHAR, descriptor);
+	fgets(entry, MAXCHAR, config);
 	net->output = atoi(entry);
-	fclose(descriptor);
+	fclose(config);
 	net->hidden_weights = matrix_load("hidden");
 	net->output_weights = matrix_load("output");
 	printf("Successfully loaded network from '%s'\n", file_string);
-	chdir("-"); // Go back to the original directory
+	chdir("-");
 	return net;
 }
 
