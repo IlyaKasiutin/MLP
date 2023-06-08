@@ -154,8 +154,8 @@ Matrix* network_predict(NeuralNetwork* net, Matrix* input_data) {
 }
 
 void network_save(NeuralNetwork* net, char* file_string) {
-	mkdir(file_string);
-	chmod(file_string, 0777);
+	mkdir(file_string, 0777);
+	//chmod(file_string, 0777);
 	// Write the descriptor file
 	chdir(file_string);
 	FILE* descriptor = fopen("descriptor", "w");
