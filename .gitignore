@@ -3,3 +3,6 @@ main
 testing_net/*
 .vscode/settings.json
 build
+data/mnist_test.csv
+data/mnist_train.csv
+cnn
