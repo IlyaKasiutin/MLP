@@ -2,3 +2,4 @@ main
 *.o
 testing_net/*
 .vscode/settings.json
+build
