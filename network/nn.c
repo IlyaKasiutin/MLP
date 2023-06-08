@@ -27,7 +27,7 @@ NeuralNetwork* network_create(int input, int hidden, int output, double lr) {
 
 void network_train(NeuralNetwork* net, Matrix* input, Matrix* output) {
 	// Feed forward
-	Matrix* hidden_inputs	= dot(net->hidden_weights, input);
+	Matrix* hidden_inputs = dot(net->hidden_weights, input);
 	Matrix* hidden_outputs = apply(sigmoid, hidden_inputs);
 	Matrix* final_inputs = dot(net->output_weights, hidden_outputs);
 	Matrix* final_outputs = apply(sigmoid, final_inputs);
@@ -40,17 +40,17 @@ void network_train(NeuralNetwork* net, Matrix* input, Matrix* output) {
 
 	// Backpropogate
 	// output_weights = add(
-	//		 output_weights, 
+	// 		 output_weights, 
 	//     scale(
 	// 			  net->lr, 
-	//			  dot(
+	// 			  dot(
 	// 		 			multiply(
 	// 						output_errors, 
-	//				  	sigmoidPrime(final_outputs)
-	//					), 
-	//					transpose(hidden_outputs)
+	// 				  	sigmoidPrime(final_outputs)
+	// 					), 
+	// 					transpose(hidden_outputs)
 	// 				)
-	//		 )
+	// 		 )
 	// )
 	Matrix* sigmoid_primed_mat = sigmoidPrime(final_outputs);
 	Matrix* multiplied_mat = multiply(output_errors, sigmoid_primed_mat);
@@ -108,7 +108,7 @@ void network_train(NeuralNetwork* net, Matrix* input, Matrix* output) {
 
 void network_train_batch_imgs(NeuralNetwork* net, Img** imgs, int batch_size) {
 	for (int i = 0; i < batch_size; i++) {
-		if (i % 100 == 0) printf("Img No. %d\n", i);
+		if (i % 100 == 0) printf("Img: %d\n", i);
 		Img* cur_img = imgs[i];
 		Matrix* img_data = matrix_flatten(cur_img->img_data, 0); // 0 = flatten to column vector
 		Matrix* output = matrix_create(10, 1);
