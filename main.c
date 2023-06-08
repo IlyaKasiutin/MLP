@@ -12,8 +12,9 @@ int main() {
 	srand(time(NULL));
 
 	//TRAINING
-	int number_imgs = 10000;
+	int number_imgs = 1000;
 	Img** imgs = csv_to_imgs("./data/mnist_train.csv", number_imgs);
+	img_print(imgs[13]);
 	NeuralNetwork* net = network_create(784, 300, 10, 0.1);
 	network_train_batch_imgs(net, imgs, number_imgs);
 	network_save(net, "testing_net");

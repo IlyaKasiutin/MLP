@@ -37,7 +37,8 @@ void matrix_print(Matrix* m) {
 	printf("Rows: %d Columns: %d\n", m->rows, m->cols);
 	for (int i = 0; i < m->rows; i++) {
 		for (int j = 0; j < m->cols; j++) {
-			printf("%1.3f ", m->entries[i][j]);
+			//printf("%1.3f ", m->entries[i][j]);
+			printf("%d", m->entries[i][j] > 0 ? 1 : 0);
 		}
 		printf("\n");
 	}
