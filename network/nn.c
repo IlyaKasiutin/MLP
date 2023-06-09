@@ -113,7 +113,7 @@ void network_train(NeuralNetwork* net, Matrix* input, Matrix* output) {
 
 void network_train_batch_imgs(NeuralNetwork* net, Img** imgs, int batch_size) {
 	for (int i = 0; i < batch_size; i++) {
-		if (i % 100 == 0) printf("Img: %d\n", i);
+		//if (i % 100 == 0) printf("Img: %d\n", i);
 		Img* cur_img = imgs[i];
 		Matrix* img_data = matrix_flatten(cur_img->img_data, 0);
 		Matrix* output = matrix_create(10, 1);
